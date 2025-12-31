@@ -1,0 +1,18 @@
+{
+    "Comment": "ACM Validation Record",
+    "Changes": [
+        {
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": "_3a3d78a7dfa0489c90f74c9a55a0f8ee.zunagrey.com.",
+                "Type": "CNAME",
+                "TTL": 300,
+                "ResourceRecords": [
+                    {
+                        "Value": "_6e34d36b6d1f68796ce0b8093bef6e6d.jkddzztszm.acm-validations.aws."
+                    }
+                ]
+            }
+        }
+    ]
+}

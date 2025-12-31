@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZUNA GREY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Ice Blue / Cyan "Logic" Display */
+            --term-color: #00f0ff;
+            --term-bg: #0a0a10;
+            /* Deep blue-black */
+            --term-glow: 0 0 6px rgba(0, 240, 255, 0.6);
+        }
+
+        /* 
+           Scanline and CRT Effects 
+           Credits to various CSS retro art tutorials 
+        */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--term-bg);
+            color: var(--term-color);
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            overflow: hidden;
+            /* Prevent scrollbars generally, we'll handle scroll in terminal */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg,
+                    rgba(255, 0, 0, 0.06),
+                    rgba(0, 255, 0, 0.02),
+                    rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            /* Let clicks pass through */
+            z-index: 999;
+        }
+
+        /* Text Bloom/Glow */
+        /* Text Bloom/Glow */
+        .terminal {
+            width: 95%;
+            height: 95%;
+            padding: 20px;
+            box-sizing: border-box;
+            text-shadow: 0 0 5px var(--term-color);
+            position: relative;
+
+            /* New Layout Logic */
+            display: flex;
+            flex-direction: column;
+        }
+
+        #output {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            /* keeps text at bottom like a real terminal feed */
+            padding-bottom: 10px;
+        }
+
+        /* Apply scrollbar to output now */
+        #output::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #output::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        #output::-webkit-scrollbar-thumb {
+            background: #003300;
+        }
+
+        #output::-webkit-scrollbar-thumb:hover {
+            background: #005500;
+        }
+
+
+        /* Custom Scrollbar for Chrome/Safari */
+        .terminal::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .terminal::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        .terminal::-webkit-scrollbar-thumb {
+            background: #003300;
+        }
+
+        .terminal::-webkit-scrollbar-thumb:hover {
+            background: #005500;
+        }
+
+        .output-line {
+            white-space: pre-wrap;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .input-line {
+            display: flex;
+            margin-top: 5px;
+        }
+
+        .prompt {
+            margin-right: 10px;
+        }
+
+        #cmd-input {
+            background: transparent;
+            border: none;
+            color: var(--term-color);
+            font-family: 'VT323', monospace;
+            font-size: inherit;
+            outline: none;
+            flex-grow: 1;
+            text-shadow: 0 0 5px var(--term-color);
+            caret-color: var(--term-color);
+        }
+
+        /* Scanline Animation */
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100vh);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        #scan-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(0, 240, 255, 0.1);
+            /* Blue scanline */
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        /* Blinking Cursor for non-input elements */
+        .cursor-block {
+            display: inline-block;
+            width: 0.6em;
+            height: 1em;
+            background-color: var(--term-color);
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Retro Link Styling */
+        a {
+            color: var(--term-color);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        a:hover {
+            background-color: var(--term-color);
+            color: var(--term-bg);
+            text-decoration: none;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            body {
+                font-size: 13px;
+                /* Smaller font to fit ASCII art on narrow screens */
+            }
+
+            .terminal {
+                padding: 10px;
+                /* Maximize screen real estate */
+            }
+
+            /* Prevent auto-zoom on iOS inputs (must be 16px+) */
+            #cmd-input {
+                font-size: 16px;
+            }
+
+            /* Thinner scrollbar for mobile */
+            ::-webkit-scrollbar {
+                width: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="crt-overlay"></div>
+    <div id="scan-bar"></div>
+
+    <div class="terminal" id="terminal" onclick="document.getElementById('cmd-input').focus()">
+        <div id="output"></div>
+        <div class="input-line">
+            <span class="prompt">guest@zunagrey:~&gt;</span>
+            <input type="text" id="cmd-input" autocomplete="off" autofocus>
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+        const inputField = document.getElementById('cmd-input');
+        const terminalDiv = document.getElementById('terminal');
+
+        // State Management
+        let currentContext = 'SHELL'; // 'SHELL', 'TW2002', 'TW_PORT'
+
+        // Default Game State
+        let twState = {
+            sector: 1,
+            sectorName: "Terra Prime",
+            credits: 1000,
+            turns: 100,
+            fighters: 20,
+            fuel: 500,
+            holds: {
+                ore: 0,
+                organics: 0,
+                equipment: 0
+            },
+            maxHolds: 50,
+            shipName: "The Merchant"
+        };
+
+        // ASCII Logos
+        const logoDesktop = [
+            "  ______                      ______",
+            " |___  /                      / ____|",
+            "    / /_   _ _ __   __ _     | |  __ _ __ ___ _   _",
+            "   / /| | | | '_ \\ / _` |    | | |_ | '__/ _ \\ | | |",
+            "  / /_| |_| | | | | (_| |    | |__| | | |  __/ |_| |",
+            " /_____\\__,_|_| |_|\\__,_|     \\_____|_|  \\___|\\__, |",
+            "                                               __/ |",
+            "                                              |___/"
+        ];
+
+        const logoMobile = [
+            " _____   ___  _________   __",
+            "/__  /  /   |/   /   | | / /",
+            "  / /  / /| / / / /| | |/ / ",
+            " / /__/ /_|  / / ___ |   /  ",
+            "/____/___/|_/_/_/  |_|__/",
+            "   ___________  _________  __",
+            "  / ____/ __ \\/ ____/\\ \\/ /",
+            " / / __/ /_/ / __/    \\  / ",
+            "/ /_/ / _, _/ /___    / /  ",
+            "\\____/_/ |_/_____/   /_/   "
+        ];
+        // Tiny ZUNA GREY for Mobile (Max 20 chars wide)
+        const logoMobileCompact = [
+            "  _____  __ __  _   _   ___ ",
+            " |_  / ||  || || \\ | | /   \\",
+            "  / /| ||  || ||  \\| ||  -  |",
+            " /___|\\__/\\__/ |_|\\__||_| |_|",
+            "   ___  ___  ___ __   __   ",
+            "  / __|| _ \\| __|\\ \\ / /   ",
+            " | (_ ||   /| _|  \\ V /    ",
+            "  \\___||_|_\\|___|  |_|     "
+        ];
+
+        let bootSequence = [];
+        let bootIndex = 0;
+
+        function initBootSequence() {
+            const isMobile = window.innerWidth <= 600;
+            // No ASCII for mobile, just text to avoid breaking
+            const selectedLogo = isMobile ? ["*** ZUNA GREY ***"] : logoDesktop;
+
+            bootSequence = [
+                "Detecting User Presence... CONFIRMED",
+                "Analyzing Psycho-Acoustic Signature... MATCH",
+                "Loading Subconscious Protocols....... OK",
+                "Decrypting Manifest.................. OK",
+                " ",
+                ...selectedLogo,
+                " ",
+                "System Online. The void stares back.",
+                "Type 'help' to navigate the signal.",
+                " "
+            ];
+        }
+
+        // ANSI Art Helpers
+        const ansiFace = [
+            "  .-------.",
+            " /   _ _   \\",
+            " |   o o   |",
+            " |    >    |",
+            " \\   ---   /",
+            "  `-------`"
+        ];
+
+        const starBaseArt = [
+            "      /|\\      ",
+            "     / | \\     ",
+            "    /  |  \\    ",
+            "   |===|===|   ",
+            "    \\  |  /    ",
+            "     \\ | /     ",
+            "      \\|/      "
+        ];
+
+        // --- UTILS ---
+        function printLine(text, isHTML = false) {
+            const line = document.createElement('div');
+            line.className = 'output-line';
+            if (isHTML) {
+                line.innerHTML = text;
+            } else {
+                line.textContent = text;
+            }
+            outputDiv.appendChild(line);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        function printBlock(lines) {
+            lines.forEach(line => printLine(line));
+        }
+
+        function saveGame() {
+            const json = JSON.stringify(twState);
+            document.cookie = `tw_save=${encodeURIComponent(json)}; path=/; max-age=31536000`; // 1 year
+            // printLine("[System] Game State Checkpointed.");
+        }
+
+        function loadGame() {
+            const match = document.cookie.match(new RegExp('(^| )tw_save=([^;]+)'));
+            if (match) {
+                try {
+                    const saved = JSON.parse(decodeURIComponent(match[2]));
+                    // Merge saved state over default to handle version changes safely
+                    twState = { ...twState, ...saved };
+                    return true;
+                } catch (e) {
+                    console.error("Save file corrupted");
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // --- BIOS & BOOT SEQUENCES ---
+
+        function runBiosSequence() {
+            // Clear initially just in case
+            outputDiv.innerHTML = '';
+
+            // BIOS Header
+            printLine("Award Modular BIOS v4.51PG, An Energy Star Ally");
+            printLine("Copyright (C) 1984-95, Award Software, Inc.");
+            printLine(" ");
+            printLine("AMD Am486 DX4-100 Detected");
+
+            // Memory Count Simulation
+            let mem = 0;
+            const maxMem = 16384; // 16MB of RAM, wow!
+
+            // Create a line for memory we can update
+            const memLine = document.createElement('div');
+            memLine.className = 'output-line';
+            outputDiv.appendChild(memLine);
+
+            function countMemory() {
+                mem += 256; // Count by 256K chunks
+                if (mem > maxMem) mem = maxMem;
+
+                memLine.textContent = `Memory Test:  ${mem}K OK`;
+
+                if (mem < maxMem) {
+                    setTimeout(countMemory, 20); // Fast count
+                } else {
+                    // Continue BIOS post after memory check
+                    finishBiosPost();
+                }
+            }
+
+            setTimeout(countMemory, 500);
+        }
+
+        function finishBiosPost() {
+            setTimeout(() => {
+                printLine(" ");
+                printLine("Award Plug and Play BIOS Extension v1.0A");
+                printLine("Copyright (C) 1995, Award Software, Inc.");
+                printLine(" ");
+            }, 200);
+
+            setTimeout(() => {
+                printLine("Detecting IDE Primary Master ... WDC AC2850");
+                printLine("Detecting IDE Primary Slave  ... None");
+                printLine("Detecting IDE Secondary Master . None");
+                printLine("Detecting IDE Secondary Slave  ... None");
+            }, 800);
+
+            setTimeout(() => {
+                printLine(" ");
+                printLine("Press DEL to enter SETUP");
+                printLine("06/15/95-i430FX-2A59CF2BC-00");
+            }, 2000);
+
+            // Transition to Zuna load
+            setTimeout(() => {
+                outputDiv.innerHTML = ''; // CLS
+                runSystemLoad(); // The original "System Online" sequence
+            }, 4000);
+        }
+
+        function runSystemLoad() {
+            if (bootIndex < bootSequence.length) {
+                printLine(bootSequence[bootIndex]);
+                bootIndex++;
+                setTimeout(runSystemLoad, 100 + Math.random() * 150);
+            } else {
+                // Done loading
+                setTimeout(() => {
+                    inputField.style.display = 'block';
+                    document.querySelector('.prompt').style.display = 'inline';
+                    inputField.focus();
+                }, 800);
+            }
+        }
+
+        window.onload = function () {
+            initBootSequence(); // Generate boot text based on screen size
+            loadGame(); // Try to load save on boot
+
+            inputField.style.display = 'none';
+            document.querySelector('.prompt').style.display = 'none';
+
+            // Start with BIOS -> System Load -> Input
+            setTimeout(runBiosSequence, 500);
+        };
+
+        inputField.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const cmd = inputField.value.trim();
+
+                // Echo
+                const prompt = currentContext === 'SHELL' ? 'guest@zunagrey:~>' :
+                    currentContext === 'TW2002' ? 'Command [TL=00:00:00]:' : 'Docking Bay>';
+
+                if (cmd || currentContext !== 'SHELL') {
+                    printLine(`${prompt} ${cmd}`);
+                }
+
+                const cleanCmd = cmd.toLowerCase();
+
+                if (currentContext === 'SHELL') {
+                    processCommand(cleanCmd);
+                } else if (currentContext === 'TW2002') {
+                    processGameCommand(cleanCmd);
+                } else if (currentContext === 'TW_PORT') {
+                    processPortCommand(cleanCmd);
+                }
+
+                inputField.value = '';
+                terminalDiv.scrollTop = terminalDiv.scrollHeight;
+
+                // Update GUI Prompt
+                const promptSpan = document.querySelector('.prompt');
+                if (currentContext === 'SHELL') promptSpan.textContent = 'guest@zunagrey:~>';
+                else if (currentContext === 'TW2002') promptSpan.textContent = 'TW_CMD>';
+                else promptSpan.textContent = 'PORT_CMD>';
+            }
+        });
+
+        // --- MAIN SHELL (BAND CONTENT) ---
+        function processCommand(cmd) {
+            if (!cmd) return;
+
+            switch (cmd) {
+                case 'help':
+                case '?':
+                    printLine("--- SYSTEM MENU ---");
+                    printLine("  about    - Entity Data");
+                    printLine("  audio    - Sonic Transmissions");
+                    printLine("  socials  - External Feeds");
+                    printLine("  shows    - Ritual Locations");
+                    printLine("  merch    - Physical Artifacts");
+                    printLine("  signal   - Encrypted Comms (Press)");
+                    printLine("  contact  - Uplink");
+                    printLine("  tw2002   - SIMULATION_MODE // TRADEWARS");
+                    printLine("  cls      - Purge Display");
+                    break;
+
+                case 'about':
+                case 'bio':
+                    printLine("--- ENTITY DATA ---");
+                    printLine("We are the static between stations. The noise you cannot tune out.");
+                    printLine(" ");
+
+                    // Jon
+                    printLine("> SUBJECT: JON STANBRIDGE [GTR/VOC]");
+                    printLine("\"Jon Stanbridge is an extremely limited guitarist with virtually\"");
+                    printLine("\"no experience performing across any genre. His influences include\"");
+                    printLine("\"Eric Johnson, Steve Vai, and Jeff Beck, though you’d never tell.\"");
+                    printLine(" ");
+
+                    // Michael
+                    printLine("> SUBJECT: MICHAEL DUNHAM [BAS/low_freq]");
+                    printLine("Resonant frequency carrier. Anchors the signal to the physical plane.");
+                    printLine("Status: Operational.");
+                    printLine(" ");
+
+                    // James
+                    printLine("> SUBJECT: JAMES KLASSEN [PERC/time_keep]");
+                    printLine("Kinetic energy converter. Maintainer of the universal pulse.");
+                    printLine("Status: Waiting for input.");
+                    printLine(" ");
+
+                    printLine("ORIGIN: Alberta Sector, Canada Zone.");
+                    break;
+
+                case 'audio':
+                case 'music':
+                    printLine("--- SONIC TRANSMISSIONS ---");
+                    printLine("Incoming streams...");
+                    printLine(" ");
+                    printLine("[STREAMING_PLATFORMS]", false);
+                    printLine("- <a href='https://open.spotify.com/artist/1DZv7YbcdNunxPMIb3tfas?si=q40C6QM-QXqyJGDNZMqAEA' target='_blank'>SPOTIFY_PROTOCOL</a>", true);
+                    printLine("- <a href='https://music.apple.com/ca/artist/zuna-grey/1787713945' target='_blank'>APPLE_MUSIC_UPLINK</a>", true);
+                    printLine("- <a href='https://soundcloud.com/mjwdunham' target='_blank'>SOUNDCLOUD_ARCHIVE</a>", true);
+                    printLine(" ");
+                    printLine("Local buffers empty. Please access via external nodes.");
+                    break;
+
+                case 'socials':
+                case 'social':
+                case 'instagram':
+                    printLine("--- EXTERNAL FEEDS ---");
+                    printLine("Monitoring the collective unconscious...");
+                    printLine(" ");
+                    printLine("> <a href='https://www.instagram.com/zunagrey' target='_blank'>INSTAGRAM_FEED</a> [ACTIVE]", true);
+                    printLine("> <a href='#' target='_blank'>FACEBOOK_NODE</a> [OFFLINE]", true);
+                    break;
+
+                case 'merch':
+                case 'store':
+                    printLine("--- ARTIFACTS ---");
+                    printLine("Supply Drop Pending.");
+                    printLine("Check <a href='#' target='_blank'>OFFICIAL_STORE_MODULE</a> (Coming Soon)", true);
+                    break;
+
+                case 'shows':
+                case 'ritual':
+                case 'rituals':
+                    printLine("--- RITUAL LOCATIONS ---");
+                    printLine(" ");
+                    printLine("[UPCOMING]");
+                    printLine("> DEC 31 2025 - THE VOID (Alberta) ........ [TICKETS]");
+                    printLine("> JAN 15 2026 - GALACTIC PUB .............. [PENDING]");
+                    printLine(" ");
+                    printLine("[PAST TRANSMISSIONS]");
+                    printLine("> NOV 04 2024 - THE AVIARY (Edmonton) ..... [EXEC_COMPLETE]");
+                    printLine("> OCT 31 2024 - HALLOWEEN BASH ............ [EXEC_COMPLETE]");
+                    printLine("> SEP 15 2024 - GARAGE SESSION ............ [ARCHIVED]");
+                    printLine(" ");
+                    printLine("History is written by the victors. We just played the music.");
+                    break;
+
+                case 'signal':
+                case 'press':
+                case 'epk':
+                    printLine("--- ENCRYPTED MESSAGE ---");
+                    printLine("Decoding...");
+                    printLine("'We do not play songs. We broadcast warnings.'");
+                    printLine("Status: EPK AVAILABLE upon secure request.");
+                    break;
+
+                case 'contact':
+                    printLine("--- UPLINK CHANNELS ---");
+                    printLine("Direct Feed: booking@zunagrey.com");
+                    printLine("Admin Node: admin@zunagrey.com");
+                    printLine("Physical Drop: PO Box 199X, Alberta Sector");
+                    break;
+
+                case 'clear':
+                case 'cls':
+                    outputDiv.innerHTML = '';
+                    break;
+
+                case 'ls':
+                    printLine("CONTENTS:");
+                    printLine("SYS_CORE.DAT   BAND_MANIFEST.TXT   TW2002_LAUNCHER.EXE");
+                    break;
+
+                case 'tw2002':
+                case 'tradewars':
+                    if (confirm("WARNING: ENTERING SIMULATION. PROGRESS WILL BE SAVED. CONTINUE?")) {
+                        enterTradeWars();
+                    }
+                    break;
+
+                default:
+                    printLine(`ERR: Command '${cmd}' not recognized.`);
+                    printLine("Use 'help' to realign.");
+            }
+            printLine(" ");
+        }
+
+        // --- TRADEWARS 2002 ENGINE ---
+
+        function enterTradeWars() {
+            currentContext = 'TW2002';
+            document.querySelector('.prompt').textContent = 'TW_CMD>';
+            printLine(" ");
+            printLine("Executing TW2002.EXE...");
+            setTimeout(() => {
+                printLine("Logging in...");
+                printLine(`Welcome back, Commander of ${twState.shipName}.`);
+                printGameStatus();
+            }, 800);
+        }
+
+        function printGameStatus() {
+            printLine(" ");
+            printLine(`SECTOR: ${twState.sector} [${twState.sectorName}]`);
+            printLine(`CREDITS: ${twState.credits} | FIGHTERS: ${twState.fighters} | FUEL: ${twState.fuel}`);
+            printLine(`TURNS: ${twState.turns} | HOLDS: ${twState.holds.ore + twState.holds.organics + twState.holds.equipment} / ${twState.maxHolds}`);
+            printLine(`(Ore: ${twState.holds.ore}, Org: ${twState.holds.organics}, Equ: ${twState.holds.equipment})`);
+            printLine(" ");
+            printLine("Command [D]ock, [M]ove, [S]can, [P]ort Info, [Q]uit ?");
+            saveGame(); // Auto-save on status view
+        }
+
+        function processGameCommand(cmd) {
+            const c = cmd.charAt(0);
+
+            // Check Turns (unless quitting)
+            if (twState.turns <= 0 && c !== 'q') {
+                printLine("You are out of turns for today.");
+                return;
+            }
+
+            switch (c) {
+                case 'd': // DOCK (Enter Port)
+                    // Simple check if port exists (random for now based on sector mod)
+                    if (twState.sector % 2 !== 0) {
+                        currentContext = 'TW_PORT';
+                        printLine("Docking clamps engaged...");
+                        printBlock(starBaseArt);
+                        printLine(`Welcome to Starbase ${twState.sector}-Alpha.`);
+                        printPortMenu();
+                    } else {
+                        printLine("No Starbase in this sector.");
+                    }
+                    break;
+
+                case 'm': // MOVE
+                    const dest = parseInt(cmd.split(' ')[1]);
+                    if (!dest) {
+                        printLine("Destination required. Usage: m <sector>");
+                        return;
+                    }
+                    if (dest < 1 || dest > 1000) {
+                        printLine("Invalid Sector.");
+                        return;
+                    }
+                    if (twState.fuel < 10) {
+                        printLine("Insufficient Fuel.");
+                        return;
+                    }
+
+                    twState.fuel -= 10;
+                    twState.turns--;
+                    twState.sector = dest;
+                    twState.sectorName = `Zone ${dest}`;
+                    printLine(`Warping to Sector ${dest}...`);
+
+                    // Random Event
+                    const rand = Math.random();
+                    if (rand < 0.1) {
+                        printLine("!! PIRATE ATTACK !!");
+                        if (twState.fighters > 5) {
+                            printLine("Your fighters fend them off! Lost 2 fighters.");
+                            twState.fighters -= 2;
+                        } else {
+                            printLine("They hit your cargo bay! Lost 50 credits.");
+                            twState.credits = Math.max(0, twState.credits - 50);
+                        }
+                    } else if (rand > 0.9) {
+                        printLine("You found a derelict ship. Salvaged 20 fuel!");
+                        twState.fuel += 20;
+                    }
+
+                    printGameStatus();
+                    break;
+
+                case 's': // SCAN
+                    printLine(`Scanning Sector ${twState.sector}...`);
+                    printLine(`Port: ${twState.sector % 2 !== 0 ? 'Starbase Present' : 'None'}`);
+                    printLine("Aliens: None detected.");
+                    break;
+
+                case 'p': // PORT INFO (Quick check)
+                    if (twState.sector % 2 !== 0) {
+                        printLine("Class 2 Starbase. Buys Ore, Sells Equipment.");
+                    } else {
+                        printLine("No port.");
+                    }
+                    break;
+
+                case 'q': // QUIT
+                    printLine("Saving and exiting simulation...");
+                    saveGame();
+                    currentContext = 'SHELL';
+                    document.querySelector('.prompt').textContent = 'guest@zunagrey:~>';
+                    printLine(" ");
+                    printLine("Connection Terminated.");
+                    break;
+
+                case '?':
+                case 'h':
+                    printLine("COMMANDS:");
+                    printLine("  [D]ock  - Enter Starbase (if present)");
+                    printLine("  [M]ove  - Warp to sector (Format: m 123)");
+                    printLine("  [S]can  - Long Range Scan");
+                    printLine("  [Q]uit  - Return to SHELL");
+                    break;
+
+                default:
+                    printLine("Invalid Command.");
+            }
+        }
+
+        // --- PORT COMMERCE ENGINE ---
+        function printPortMenu() {
+            printLine(" ");
+            printLine("--- COMMERCE COMPUTER ---");
+            printLine(`Credits: ${twState.credits}`);
+            printLine("[1] Buy Ore (Free Loading)");
+            printLine("[2] Sell Ore (25cr/unit)");
+            printLine("[3] Buy Fuel (1cr/unit)");
+            printLine("[Q] Undock");
+            document.querySelector('.prompt').textContent = 'PORT_CMD>';
+        }
+
+        function processPortCommand(cmd) {
+            const c = cmd.charAt(0);
+            switch (c) {
+                case '1': // Buy Ore (Simplified: Mining style, just scoop it up?) No, Buy logic.
+                    // Actually let's make it simple: You BUY equipment, you SELL Ore you "mined" (found). 
+                    // Let's swap: Buy Fuel, Sell Ore.
+                    printLine("Usage: buy <amount> / sell <amount>");
+                    printLine("Actually, press Q and use 'm' to find events to get ore.");
+                    break;
+
+                // Let's implement basic commands:
+                case 'b': // Buy Fuel command: "b 100"
+                case 's': // Sell Ore command: "s 10"
+                    const parts = cmd.split(' ');
+                    const action = parts[0];
+                    const amt = parseInt(parts[1] || 0);
+
+                    if (action === 'b') { // Buy Fuel
+                        const cost = amt * 1;
+                        if (twState.credits >= cost) {
+                            twState.credits -= cost;
+                            twState.fuel += amt;
+                            printLine(`Purchased ${amt} fuel.`);
+                        } else {
+                            printLine("Insufficient credits.");
+                        }
+                    } else if (action === 's') { // Sell Ore
+                        // Assuming they have ore (debug mode: give free ore for now?)
+                        if (twState.holds.ore >= amt) {
+                            twState.holds.ore -= amt;
+                            twState.credits += (amt * 25);
+                            printLine(`Sold ${amt} ore for ${amt * 25} credits.`);
+                        } else {
+                            printLine("Insufficient ore.");
+                        }
+                    }
+                    printLine(`Credits: ${twState.credits} | Fuel: ${twState.fuel} | Ore: ${twState.holds.ore}`);
+                    break;
+
+                case 'q':
+                    printLine("Undocking...");
+                    currentContext = 'TW2002';
+                    document.querySelector('.prompt').textContent = 'TW_CMD>';
+                    printGameStatus();
+                    break;
+
+                default:
+                    printLine("Commands: 'b <amt>' (Fuel), 's <amt>' (Ore), 'q' (Undock)");
+            }
+        }
+        document.addEventListener('click', () => {
+            inputField.focus();
+        });
+    </script>
+</body>
+
+</html>
