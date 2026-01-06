@@ -242,41 +242,108 @@
             left: 0;
             width: 100%;
             height: 100%;
-            font-family: 'VT323', monospace;
-            font-size: 16px;
-            line-height: 1.2;
-            white-space: pre;
             overflow: hidden;
-            animation: tripColors 3s ease-in-out infinite;
-            opacity: 0.7;
+            perspective: 500px;
         }
 
-        @keyframes tripColors {
+        /* Matrix Rain Column */
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            line-height: 1.2;
+            white-space: pre;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41;
+            animation: matrixFall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes matrixFall {
             0% {
-                color: #ff00ff;
-                text-shadow: 0 0 10px #ff00ff;
+                transform: translateY(0) translateZ(0);
+                opacity: 0;
             }
 
-            25% {
-                color: #00ffff;
-                text-shadow: 0 0 15px #00ffff;
+            10% {
+                opacity: 1;
             }
 
-            50% {
-                color: #ffff00;
-                text-shadow: 0 0 10px #ffff00;
-            }
-
-            75% {
-                color: #ff6600;
-                text-shadow: 0 0 15px #ff6600;
+            90% {
+                opacity: 1;
             }
 
             100% {
-                color: #ff00ff;
-                text-shadow: 0 0 10px #ff00ff;
+                transform: translateY(200vh) translateZ(100px);
+                opacity: 0;
             }
         }
+
+        /* Firework Burst */
+        .firework {
+            position: absolute;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            text-align: center;
+            animation: fireworkBurst 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        .firework-particle {
+            position: absolute;
+            animation: particleExplode 1.5s ease-out forwards;
+        }
+
+        @keyframes fireworkBurst {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particleExplode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* 3D Depth Layers */
+        .depth-far {
+            font-size: 12px;
+            opacity: 0.3;
+            animation-duration: 12s;
+        }
+
+        .depth-mid {
+            font-size: 18px;
+            opacity: 0.6;
+            animation-duration: 8s;
+        }
+
+        .depth-near {
+            font-size: 26px;
+            opacity: 1;
+            animation-duration: 5s;
+            text-shadow: 0 0 15px #00ff41, 0 0 30px #00ff41;
+        }
+
 
         #trippy-bg .scroll-layer {
             animation: scrollUp 8s linear infinite;
@@ -1002,52 +1069,88 @@
             }
         }
 
-        // --- ROCK.EXE VISUAL EXPERIENCE (Pure ASCII) ---
-        let rockAnimationId;
+        // --- ROCK.EXE VISUAL EXPERIENCE (Matrix + Fireworks) ---
+        let rockIntervals = [];
 
         function startRockShow() {
             const container = document.getElementById('rock-scene');
             const trippyBg = document.getElementById('trippy-bg');
             container.style.display = 'block';
             terminalDiv.style.display = 'none';
+            trippyBg.innerHTML = '';
 
-            // Trippy ASCII patterns for mushroom trip effect
-            const tripChars = ['◉', '◎', '●', '○', '◐', '◑', '◒', '◓', '✦', '✧', '★', '☆', '✴', '✳', '❂', '❃', '✿', '❀', '🍄', '∞', '≋', '≈', '~', '◇', '◆'];
-            const spiralChars = ['/', '|', '\\\\', '-', '/', '|', '\\\\', '-'];
+            // Matrix characters (Japanese katakana + symbols)
+            const matrixChars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ZUNAGREYROCKEXE*+-.';
+            const fireworkChars = ['✦', '✧', '★', '☆', '✴', '✳', '❂', '❃', '✿', '❀', '◉', '◎', '●', '○'];
 
-            // Generate initial trippy ASCII art
-            function generateTrippyArt() {
-                const cols = Math.floor(window.innerWidth / 12);
-                const rows = Math.floor(window.innerHeight / 16) * 2;
-                let art = '';
+            // Spawn Matrix rain column
+            function spawnColumn() {
+                const col = document.createElement('div');
+                col.className = 'matrix-column';
 
-                for (let y = 0; y < rows; y++) {
-                    let line = '';
-                    for (let x = 0; x < cols; x++) {
-                        // Create spiral/wave pattern
-                        const wave = Math.sin((x + y) * 0.3) + Math.cos((x - y) * 0.2);
-                        const idx = Math.floor(Math.abs(wave * tripChars.length)) % tripChars.length;
-                        line += tripChars[idx];
-                    }
-                    art += line + '\\n';
+                // Random depth layer
+                const depthClass = ['depth-far', 'depth-mid', 'depth-near'][Math.floor(Math.random() * 3)];
+                col.classList.add(depthClass);
+
+                // Random horizontal position
+                col.style.left = Math.random() * 100 + '%';
+
+                // Generate random character string
+                let chars = '';
+                const len = 15 + Math.floor(Math.random() * 20);
+                for (let i = 0; i < len; i++) {
+                    chars += matrixChars[Math.floor(Math.random() * matrixChars.length)] + '\n';
                 }
-                return art + art; // Double for scrolling
+                col.textContent = chars;
+
+                trippyBg.appendChild(col);
+
+                // Remove after animation
+                setTimeout(() => col.remove(), 12000);
             }
 
-            // Create scroll layer
-            const scrollLayer = document.createElement('div');
-            scrollLayer.className = 'scroll-layer';
-            scrollLayer.textContent = generateTrippyArt();
-            trippyBg.innerHTML = '';
-            trippyBg.appendChild(scrollLayer);
+            // Launch ASCII firework
+            function launchFirework() {
+                const x = Math.random() * 80 + 10; // 10-90% of width
+                const y = Math.random() * 50 + 10; // 10-60% of height
 
-            // Regenerate pattern periodically for extra trippy effect
-            let patternInterval = setInterval(() => {
-                scrollLayer.textContent = generateTrippyArt();
-            }, 3000);
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + '%';
+                firework.style.top = y + '%';
 
-            // Store interval for cleanup
-            trippyBg.dataset.intervalId = patternInterval;
+                // Create particles
+                const particleCount = 12 + Math.floor(Math.random() * 8);
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('span');
+                    particle.className = 'firework-particle';
+                    particle.textContent = fireworkChars[Math.floor(Math.random() * fireworkChars.length)];
+
+                    // Random explosion direction
+                    const angle = (i / particleCount) * 360;
+                    const distance = 50 + Math.random() * 100;
+                    particle.style.setProperty('--tx', Math.cos(angle * Math.PI / 180) * distance + 'px');
+                    particle.style.setProperty('--ty', Math.sin(angle * Math.PI / 180) * distance + 'px');
+
+                    // Random color
+                    const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff6600', '#00ff41'];
+                    particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.textShadow = `0 0 10px ${particle.style.color}`;
+
+                    firework.appendChild(particle);
+                }
+
+                trippyBg.appendChild(firework);
+                setTimeout(() => firework.remove(), 2000);
+            }
+
+            // Start spawning
+            rockIntervals.push(setInterval(spawnColumn, 100)); // Rain columns
+            rockIntervals.push(setInterval(launchFirework, 800)); // Fireworks
+
+            // Initial burst
+            for (let i = 0; i < 20; i++) spawnColumn();
+            for (let i = 0; i < 5; i++) setTimeout(() => launchFirework(), i * 200);
 
             // Devil horns visibility
             document.getElementById('devil-horns').style.display = 'block';
@@ -1067,10 +1170,9 @@
             const container = document.getElementById('rock-scene');
             const trippyBg = document.getElementById('trippy-bg');
 
-            // Clear interval
-            if (trippyBg.dataset.intervalId) {
-                clearInterval(parseInt(trippyBg.dataset.intervalId));
-            }
+            // Clear all intervals
+            rockIntervals.forEach(id => clearInterval(id));
+            rockIntervals = [];
             trippyBg.innerHTML = '';
 
             container.style.display = 'none';
