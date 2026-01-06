@@ -222,7 +222,96 @@
                 width: 4px;
             }
         }
+
+        /* rock.exe Scene */
+        #rock-scene {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000;
+            background: #000;
+        }
+
+        #rock-scene canvas {
+            display: block;
+        }
+
+        #devil-horns {
+            position: fixed;
+            bottom: 5%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 4rem;
+            color: #00f0ff;
+            text-shadow: 0 0 20px #00f0ff, 0 0 40px #ff00ff;
+            z-index: 1001;
+            pointer-events: none;
+            font-family: 'VT323', monospace;
+            animation: hornPulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes hornPulse {
+            from {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            to {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        #rock-exit-hint {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #00f0ff;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            z-index: 1002;
+            opacity: 0.7;
+        }
+
+        /* Mobile Quick Commands */
+        #quick-cmds {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 0;
+            justify-content: center;
+        }
+
+        #quick-cmds button {
+            background: transparent;
+            border: 1px solid var(--term-color);
+            color: var(--term-color);
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        #quick-cmds button:active {
+            background: var(--term-color);
+            color: var(--term-bg);
+        }
+
+        @media (max-width: 600px) {
+            #quick-cmds {
+                display: flex;
+            }
+
+            #devil-horns {
+                font-size: 2.5rem;
+            }
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 
 <body>
@@ -232,9 +321,23 @@
 
     <div class="terminal" id="terminal" onclick="document.getElementById('cmd-input').focus()">
         <div id="output"></div>
+        <div id="quick-cmds">
+            <button onclick="runQuickCmd('help')">help</button>
+            <button onclick="runQuickCmd('audio')">audio</button>
+            <button onclick="runQuickCmd('shows')">shows</button>
+            <button onclick="runQuickCmd('rock.exe')">rock.exe</button>
+        </div>
         <div class="input-line">
             <span class="prompt">guest@zunagrey:~&gt;</span>
             <input type="text" id="cmd-input" autocomplete="off" autofocus>
+        </div>
+    </div>
+
+    <!-- rock.exe Visual Experience -->
+    <div id="rock-scene">
+        <div id="rock-exit-hint">[ESC] or TAP to exit</div>
+        <div id="devil-horns">
+            🤘 ZUNA GREY 🤘
         </div>
     </div>
 
@@ -520,6 +623,7 @@
                     printLine("  merch    - Physical Artifacts");
                     printLine("  signal   - Encrypted Comms (Press)");
                     printLine("  contact  - Uplink");
+                    printLine("  rock.exe - VISUAL_EXPERIENCE");
                     printLine("  tw2002   - SIMULATION_MODE // TRADEWARS");
                     printLine("  cls      - Purge Display");
                     break;
@@ -630,6 +734,12 @@
                     if (confirm("WARNING: ENTERING SIMULATION. PROGRESS WILL BE SAVED. CONTINUE?")) {
                         enterTradeWars();
                     }
+                    break;
+
+                case 'rock.exe':
+                case 'rock':
+                    printLine("Initializing ROCK.EXE...");
+                    setTimeout(() => startRockShow(), 500);
                     break;
 
                 default:
@@ -826,6 +936,134 @@
                     printLine("Commands: 'b <amt>' (Fuel), 's <amt>' (Ore), 'q' (Undock)");
             }
         }
+
+        // --- ROCK.EXE VISUAL EXPERIENCE (Three.js) ---
+        let rockScene, rockCamera, rockRenderer, rockAnimationId;
+        let rockParticles = [];
+
+        function startRockShow() {
+            const container = document.getElementById('rock-scene');
+            container.style.display = 'block';
+            terminalDiv.style.display = 'none';
+
+            // Scene setup
+            rockScene = new THREE.Scene();
+            rockCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            rockRenderer = new THREE.WebGLRenderer({ antialias: true });
+            rockRenderer.setSize(window.innerWidth, window.innerHeight);
+            rockRenderer.setClearColor(0x000000);
+            container.appendChild(rockRenderer.domElement);
+
+            rockCamera.position.z = 50;
+
+            // Create particle system
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+
+            for (let i = 0; i < 500; i++) {
+                positions.push(
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100
+                );
+                colors.push(Math.random(), Math.random(), 1); // Cyan-ish
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            rockScene.add(particles);
+            rockParticles.push(particles);
+
+            // Add pulsing lights
+            const light1 = new THREE.PointLight(0x00f0ff, 2, 100);
+            light1.position.set(20, 0, 20);
+            rockScene.add(light1);
+
+            const light2 = new THREE.PointLight(0xff00ff, 2, 100);
+            light2.position.set(-20, 0, 20);
+            rockScene.add(light2);
+
+            const light3 = new THREE.PointLight(0xffff00, 2, 100);
+            light3.position.set(0, 20, 20);
+            rockScene.add(light3);
+
+            // Animation loop
+            let time = 0;
+            function animate() {
+                rockAnimationId = requestAnimationFrame(animate);
+                time += 0.02;
+
+                particles.rotation.y += 0.005;
+                particles.rotation.x += 0.002;
+
+                light1.intensity = 2 + Math.sin(time * 5) * 1;
+                light2.intensity = 2 + Math.sin(time * 5 + 2) * 1;
+                light3.intensity = 2 + Math.sin(time * 5 + 4) * 1;
+
+                rockCamera.position.x = Math.sin(time * 0.5) * 5;
+                rockCamera.position.y = Math.cos(time * 0.3) * 3;
+
+                rockRenderer.render(rockScene, rockCamera);
+            }
+            animate();
+
+            // Devil horns visibility
+            document.getElementById('devil-horns').style.display = 'block';
+
+            // Exit handlers
+            window.addEventListener('keydown', handleRockExit);
+            container.addEventListener('click', handleRockExit);
+        }
+
+        function handleRockExit(e) {
+            if (e.key === 'Escape' || e.type === 'click') {
+                stopRockShow();
+            }
+        }
+
+        function stopRockShow() {
+            const container = document.getElementById('rock-scene');
+
+            if (rockAnimationId) cancelAnimationFrame(rockAnimationId);
+
+            if (rockRenderer) {
+                container.removeChild(rockRenderer.domElement);
+                rockRenderer.dispose();
+            }
+            rockScene = null;
+            rockCamera = null;
+            rockRenderer = null;
+            rockParticles = [];
+
+            container.style.display = 'none';
+            document.getElementById('devil-horns').style.display = 'none';
+            terminalDiv.style.display = 'flex';
+            inputField.focus();
+
+            window.removeEventListener('keydown', handleRockExit);
+            container.removeEventListener('click', handleRockExit);
+
+            printLine("ROCK.EXE terminated.");
+            printLine(" ");
+        }
+
+        // Quick command helper for mobile buttons
+        function runQuickCmd(cmd) {
+            inputField.value = cmd;
+            const event = new KeyboardEvent('keydown', { key: 'Enter' });
+            inputField.dispatchEvent(event);
+        }
+
         document.addEventListener('click', () => {
             inputField.focus();
         });
