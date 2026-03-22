@@ -3,6 +3,8 @@
 # Configuration
 FUNCTION_NAME="zuna-grey-bbs"
 ZIP_FILE="deployment_package.zip"
+AWS_PROFILE="d301"
+AWS_REGION="us-east-1"
 
 echo "--- Zuna Grey AWS Deployment ---"
 
@@ -23,15 +25,17 @@ echo "Package created: $ZIP_FILE"
 
 # 3. Check if function exists
 echo "Checking for existing function '$FUNCTION_NAME'..."
-if aws lambda get-function --function-name "$FUNCTION_NAME" >/dev/null 2>&1; then
+if aws lambda get-function --function-name "$FUNCTION_NAME" --profile "$AWS_PROFILE" --region "$AWS_REGION" >/dev/null 2>&1; then
     echo "Function exists. Updating code..."
     aws lambda update-function-code \
         --function-name "$FUNCTION_NAME" \
-        --zip-file "fileb://$ZIP_FILE"
+        --zip-file "fileb://$ZIP_FILE" \
+        --profile "$AWS_PROFILE" \
+        --region "$AWS_REGION"
     echo "Update complete."
 else
     echo "Function does not exist. Creating new function '$FUNCTION_NAME'..."
-    # Warning: This assumes a default execution role exists or needs to he specfied. 
+    # Warning: This assumes a default execution role exists or needs to be specified. 
     # For simplicity in this script, we'll try to create it, but often roles are complex to guess.
     # A better approach for a "hosted" request is to create the zipped package and ask the user to just upload it if they aren't IAM experts,
     # OR try to create with a basic role if we knew one.

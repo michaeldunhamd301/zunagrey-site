@@ -6,7 +6,7 @@
             "zunagrey.com"
         ]
     },
-    "DefaultRootObject": "",
+    "DefaultRootObject": "index.html",
     "Origins": {
         "Quantity": 1,
         "Items": [
