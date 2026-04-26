@@ -2,3 +2,19 @@ deployment_package.zip
 .DS_Store
 *.pyc
 __pycache__/
+
+# Tooling / editor
+.playwright-mcp/
+.stubs/
+.vscode/*
+!.vscode/settings.json
+
+# Design iteration screenshots & mockups
+home-desktop*.png
+home-mobile*.png
+glitch-*.png
+press-mobile.png
+press-v2-*.png
+v[0-9]*-home-*.png
+/.playwright-mcp/*
+/.stubs/*
