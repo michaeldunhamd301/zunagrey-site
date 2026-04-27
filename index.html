@@ -4,495 +4,525 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ZUNA GREY</title>
-<meta name="description" content="Zuna Grey. A four-piece. Alberta.">
+<meta name="description" content="Zuna Grey — a four-piece broadcasting from Alberta, Canada.">
 <meta property="og:title" content="ZUNA GREY">
-<meta property="og:description" content="A four-piece. Alberta.">
-<meta property="og:image" content="/assets/img/hero-portrait.jpg">
+<meta property="og:description" content="A four-piece broadcasting from Alberta, Canada.">
+<meta property="og:image" content="/assets/img/hero.jpg">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#e6dfce">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%23e6dfce%22/><circle cx=%2216%22 cy=%2216%22 r=%225%22 fill=%22%231a1410%22/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%230a0a0a%22/><rect x=%226%22 y=%2214%22 width=%2220%22 height=%224%22 fill=%22%23e22f2c%22/></svg>">
 <style>
   :root{
-    --paper:#e6dfce;
-    --paper-shadow:#d4ccb6;
-    --ink:#1a1410;
-    --ink-soft:#3d342c;
-    --blood:#7a1f1a;
-    --bruise:#3a2438;
+    --bg:#0a0a0a;
+    --bg-2:#111111;
+    --fg:#f5f1e8;
+    --fg-dim:#a8a39a;
+    --muted:#5a554d;
+    --rule:#1d1c1a;
+    --accent:#e22f2c;
+    --accent-dim:#7e1a18;
+    --shadow:0 10px 40px rgba(0,0,0,.5);
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{background:var(--paper);color:var(--ink);overflow-x:hidden}
+  html{scroll-behavior:smooth}
   body{
-    font-family:"Cormorant Garamond",serif;
-    min-height:100vh;
-    position:relative;
-    padding:3vh 4vw;
-    background:
-      radial-gradient(ellipse at 20% 30%, rgba(122,31,26,.04), transparent 50%),
-      radial-gradient(ellipse at 80% 70%, rgba(58,36,56,.05), transparent 50%),
-      var(--paper);
+    background:var(--bg);
+    color:var(--fg);
+    font-family:"Space Mono",ui-monospace,monospace;
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
-  /* film grain */
-  body::before{
-    content:"";
-    position:fixed;inset:0;
-    pointer-events:none;
-    z-index:50;
-    opacity:.35;
-    mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
-  /* paper deckle / stain */
-  body::after{
-    content:"";
-    position:fixed;inset:0;
-    pointer-events:none;
-    z-index:1;
-    background:
-      radial-gradient(circle at 8% 92%, rgba(122,31,26,.07), transparent 18%),
-      radial-gradient(circle at 92% 8%, rgba(58,36,56,.06), transparent 22%),
-      radial-gradient(circle at 50% 100%, rgba(26,20,16,.08), transparent 35%);
-  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--fg)}
 
-  .frame{
-    position:relative;
-    z-index:2;
-    min-height:94vh;
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr auto;
-    gap:0;
-  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
 
-  /* tiny utilitarian captions */
-  .cap{
-    font-family:"Special Elite",monospace;
-    font-size:10px;
+  /* ===== top bar ===== */
+  .topbar{
+    border-bottom:1px solid var(--rule);
+    font-size:11px;
     letter-spacing:.18em;
     text-transform:uppercase;
-    color:var(--ink-soft);
-    line-height:1.6;
+    color:var(--fg-dim);
+  }
+  .topbar .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    height:44px;
+  }
+  .topbar .left{display:flex;align-items:center;gap:14px}
+  .topbar .dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  .topbar .meta{display:flex;gap:14px;color:var(--muted)}
+  .topbar nav{display:flex;gap:22px}
+  .topbar nav a{transition:color .15s}
+  .topbar nav a:hover{color:var(--accent)}
+  .topbar .menu-btn{
+    display:none;
+    border:1px solid var(--fg-dim);
+    background:transparent;color:var(--fg);
+    font-family:inherit;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    padding:6px 14px;cursor:pointer;
   }
 
-  .marg-tl{grid-column:1;grid-row:1;align-self:start}
-  .marg-tr{grid-column:2;grid-row:1;justify-self:end;text-align:right}
-  .marg-bl{grid-column:1;grid-row:3;align-self:end}
-  .marg-br{grid-column:2;grid-row:3;justify-self:end;align-self:end;text-align:right}
-
-  .marg-tl small,.marg-tr small,.marg-bl small,.marg-br small{display:block}
-
-  /* center stage */
-  .stage{
-    grid-column:1 / -1;
-    grid-row:2;
-    position:relative;
+  /* ===== hero ===== */
+  .hero{
+    padding:42px 0 28px;
     display:grid;
     place-items:center;
-    padding:6vh 0;
   }
-
-  .photo-wrap{
+  .hero-frame{
     position:relative;
-    width:min(38vw,360px);
+    width:min(420px, 78vw);
     aspect-ratio: 3/4;
-    transform: translate(-12%, -2%) rotate(-1.4deg);
-    filter: sepia(.35) contrast(1.05) brightness(.92) saturate(.55);
+    background:#1a1814;
+    box-shadow:var(--shadow);
+    overflow:hidden;
   }
-  .photo-wrap::before{
-    content:"";
-    position:absolute;
-    inset:-14px;
-    border:1px solid rgba(26,20,16,.25);
-    transform:rotate(.8deg);
-    pointer-events:none;
-  }
-  .photo-wrap::after{
-    /* halo / circle behind subject — Vaughan Oliver / Mellon Collie nod */
-    content:"";
-    position:absolute;
-    width:120%;
-    height:120%;
-    left:-10%;
-    top:-10%;
-    border-radius:50%;
-    border:1px solid rgba(122,31,26,.5);
-    z-index:-1;
-    pointer-events:none;
-  }
-  .photo-wrap img{
+  .hero-frame img{
     width:100%;height:100%;
     object-fit:cover;
     display:block;
-    box-shadow: 0 6px 30px rgba(26,20,16,.18);
+    filter: contrast(1.05) saturate(.85);
+  }
+  .hero-frame::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(to bottom, transparent 55%, rgba(10,10,10,.85) 100%);
+    pointer-events:none;
+  }
+  .hero-title{
+    position:absolute;
+    left:0;right:0;
+    bottom:18px;
+    text-align:center;
+    z-index:2;
+    padding:0 16px;
+  }
+  .hero-title h1{
+    font-family:"Archivo Black",sans-serif;
+    font-size: clamp(34px, 6.6vw, 64px);
+    letter-spacing:.02em;
+    line-height:.95;
+    color:var(--fg);
+    text-shadow: 0 2px 18px rgba(0,0,0,.6);
+  }
+  .hero-title .sub{
+    margin-top:6px;
+    font-size:9px;
+    letter-spacing:.32em;
+    color:var(--fg-dim);
+    text-transform:uppercase;
+  }
+  .hero-mark{
+    position:absolute;
+    left:14%;right:14%;
+    bottom:10px;
+    height:6px;
+    background:var(--accent);
+    transform:skewX(-14deg);
+    opacity:.85;
+    z-index:1;
   }
 
-  .title{
-    position:absolute;
-    right:2%;
-    top:8%;
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
-    font-weight:700;
-    font-size: clamp(72px, 14vw, 220px);
-    line-height:.82;
-    letter-spacing:-.02em;
-    color:var(--ink);
-    text-align:right;
-    mix-blend-mode:multiply;
+  /* ===== tagline ===== */
+  .tagline{
+    padding:18px 0 24px;
+    border-bottom:1px solid var(--rule);
   }
-  .title span{display:block}
-  .title .grey{
-    color:var(--blood);
-    margin-left:.4em;
-    font-style:italic;
-    font-weight:400;
+  .tagline p{
+    font-family:"Archivo Black",sans-serif;
+    font-size: clamp(18px, 2.2vw, 26px);
+    line-height:1.18;
+    letter-spacing:.005em;
+    color:var(--fg);
+    max-width:60ch;
   }
+  .tagline .accent{color:var(--accent)}
 
-  .torn{
-    position:absolute;
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
-    font-size: clamp(13px, 1.1vw, 16px);
-    color:var(--ink-soft);
-    max-width:18ch;
-    line-height:1.35;
+  .cta{
+    margin-top:22px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
   }
-  .torn-1{ left:4%; top:18%; transform:rotate(-2deg); }
-  .torn-2{ right:6%; bottom:14%; transform:rotate(1deg); text-align:right; }
-  .torn-3{
-    left:36%; bottom:6%;
-    font-family:"Special Elite",monospace;
-    font-style:normal;
-    font-size:10px;
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 22px;
+    font-family:"Space Mono",monospace;
+    font-size:12px;
     letter-spacing:.22em;
     text-transform:uppercase;
-    color:var(--ink);
-    max-width:none;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .15s, background .15s, color .15s, border-color .15s;
   }
-  .torn-3 b{ color:var(--blood); font-weight:400; }
+  .btn-primary{background:var(--accent);color:var(--fg);}
+  .btn-primary:hover{background:#ff3a36}
+  .btn-ghost{background:transparent;color:var(--fg);border-color:var(--fg-dim);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .btn .arrow{font-size:14px}
 
-  /* a single struck-through cataloguing line, like a museum label */
-  .label{
-    position:absolute;
-    left:50%;
-    bottom:-2vh;
-    transform:translateX(-50%);
-    font-family:"Special Elite",monospace;
+  /* status strip */
+  .status{
+    margin-top:22px;
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
     font-size:10px;
-    letter-spacing:.3em;
+    letter-spacing:.28em;
     text-transform:uppercase;
-    color:var(--ink-soft);
-    white-space:nowrap;
+    color:var(--muted);
   }
-  .label s{opacity:.4}
+  .status span{display:inline-flex;align-items:center;gap:8px}
+  .status span::before{content:"";display:inline-block;width:5px;height:5px;background:var(--muted)}
+  .status .live::before{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .status .live{color:var(--fg-dim)}
 
-  /* corner links — small, hidden in plain sight */
-  .links a{
-    color:var(--ink);
-    text-decoration:none;
-    border-bottom:1px solid rgba(26,20,16,.25);
-    padding-bottom:1px;
-    transition: color .25s, border-color .25s;
+  /* ===== sections ===== */
+  section{padding:64px 0}
+  .sec-head{
+    display:flex;
+    align-items:baseline;
+    gap:18px;
+    margin-bottom:22px;
   }
-  .links a:hover{
-    color:var(--blood);
-    border-color:var(--blood);
-  }
-  .links em{
-    font-style:italic;
-    color:var(--ink-soft);
-    margin-right:.4em;
-  }
-
-  /* a single roman numeral page count, top center */
-  .folio{
-    position:absolute;
-    left:50%;
-    top:1.5vh;
-    transform:translateX(-50%);
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
-    font-size:13px;
-    color:var(--ink-soft);
-    letter-spacing:.2em;
-    z-index:3;
-  }
-
-  /* the "weird" — a single quietly drifting word */
-  .drift{
-    position:fixed;
-    pointer-events:none;
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
+  .sec-num{
+    font-family:"Space Mono",monospace;
     font-size:11px;
-    color:rgba(26,20,16,.35);
-    letter-spacing:.4em;
-    text-transform:uppercase;
-    z-index:4;
-    animation: drift 38s linear infinite;
+    letter-spacing:.22em;
+    color:var(--muted);
+    border:1px solid var(--rule);
+    padding:4px 8px;
   }
-  @keyframes drift{
-    0%   { left:-10%; top:62%; opacity:0; }
-    10%  { opacity:.5; }
-    50%  { opacity:.5; }
-    90%  { opacity:.5; }
-    100% { left:110%; top:48%; opacity:0; }
-  }
-
-  /* ===== plates / contact sheet (second beat) ===== */
-  .plates{
-    position:relative;
-    z-index:2;
-    margin-top:8vh;
-    padding-top:6vh;
-    border-top:1px solid rgba(26,20,16,.15);
-  }
-  .folio-2{ position:absolute; left:50%; top:-.6em; transform:translateX(-50%); background:var(--paper); padding:0 .8em; font-family:"Cormorant Garamond",serif; font-style:italic; font-size:13px; color:var(--ink-soft); letter-spacing:.2em; }
-  .plates-head{
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
-    font-weight:400;
-    font-size: clamp(28px, 4vw, 48px);
-    text-align:center;
-    color:var(--ink);
+  .sec-title{
+    font-family:"Archivo Black",sans-serif;
+    font-size: clamp(24px, 3.4vw, 38px);
+    letter-spacing:.005em;
     line-height:1;
   }
-  .plates-sub{
-    text-align:center;
-    margin-top:.6rem;
-    margin-bottom:3.5vh;
-  }
-  .sheet{
-    display:grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap:1.4rem;
-    align-items:start;
-  }
-  .plate{
-    position:relative;
-    text-align:center;
-  }
-  .plate img{
-    width:100%;
-    aspect-ratio: 3/4;
-    object-fit:cover;
+
+  /* barcode-style divider */
+  .barcode{
     display:block;
-    filter: sepia(.45) contrast(1.05) brightness(.92) saturate(.45);
-    box-shadow: 0 4px 18px rgba(26,20,16,.18);
+    height:14px;
+    width:100%;
+    background-image:repeating-linear-gradient(
+      to right,
+      var(--accent) 0 2px,
+      transparent 2px 5px,
+      var(--accent-dim) 5px 6px,
+      transparent 6px 9px,
+      var(--accent) 9px 11px,
+      transparent 11px 16px,
+      var(--accent-dim) 16px 18px,
+      transparent 18px 24px
+    );
+    opacity:.85;
+    margin:0;
   }
-  .plate::before{
-    content:"";
-    position:absolute;
-    inset:-6px;
-    border:1px solid rgba(26,20,16,.18);
-    pointer-events:none;
+
+  /* shows */
+  .shows{display:grid;gap:14px}
+  .show{
+    display:grid;
+    grid-template-columns: 130px 1fr auto;
+    gap:24px;
+    align-items:baseline;
+    padding:18px 0;
+    border-bottom:1px dashed var(--rule);
   }
-  .plate figcaption{
-    margin-top:.7rem;
-    font-family:"Special Elite",monospace;
-    font-size:9px;
+  .show .date{
+    font-family:"Archivo Black",sans-serif;
+    color:var(--accent);
+    font-size:13px;
+    letter-spacing:.06em;
+  }
+  .show .where{
+    font-family:"Archivo Black",sans-serif;
+    font-size:18px;
+    letter-spacing:.005em;
+    color:var(--fg);
+  }
+  .show .where small{
+    display:block;
+    font-family:"Space Mono",monospace;
+    font-weight:400;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+    margin-top:4px;
+  }
+  .show .meta{
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    text-align:right;
+  }
+  .show.tba .meta{color:var(--fg-dim)}
+  .all-shows{
+    margin-top:18px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:11px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+  }
+  .all-shows:hover{color:var(--accent)}
+
+  /* operatives */
+  .copy{
+    max-width:62ch;
+    color:var(--fg-dim);
+    font-size:15px;
+    line-height:1.7;
+  }
+  .read{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:18px;
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--fg-dim);
+    border-bottom:1px solid var(--rule);
+    padding-bottom:2px;
+  }
+  .read:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* listen / watch row */
+  .channels{
+    display:flex;flex-wrap:wrap;gap:10px 14px;
+    margin-top:22px;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--fg-dim);
+  }
+  .channels a{
+    border:1px solid var(--rule);
+    padding:9px 14px;
+    transition:border-color .15s,color .15s;
+  }
+  .channels a:hover{border-color:var(--accent);color:var(--accent)}
+  .channels .soon{
+    padding:9px 14px;
+    border:1px dashed var(--rule);
+    color:var(--muted);
+  }
+
+  /* booking */
+  .booking{
+    background:linear-gradient(180deg, #100f0e, #0a0a0a);
+    border:1px solid var(--rule);
+    padding:42px;
+    margin-top:8px;
+  }
+
+  /* footer */
+  footer{
+    border-top:1px solid var(--rule);
+    padding:22px 0 32px;
+    margin-top:24px;
+    color:var(--muted);
+    font-size:11px;
     letter-spacing:.22em;
     text-transform:uppercase;
-    color:var(--ink-soft);
   }
-  /* slight off-axis rotations — pinned to a sheet, not perfect */
-  .plate-a{ transform:rotate(-1.2deg); }
-  .plate-b{ transform:rotate( .8deg); }
-  .plate-c{ transform:rotate(-.4deg); }
-  .plate-d{ transform:rotate( 1.4deg); }
-  .plate-e{ transform:rotate(-.9deg); }
-  .plate-f{ transform:rotate( .6deg); }
+  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a:hover{color:var(--accent)}
 
-  /* the empty plate — reserved for video */
-  .plate.empty a{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:100%;
-    aspect-ratio:3/4;
-    background:
-      repeating-linear-gradient(45deg, rgba(26,20,16,.04) 0 6px, transparent 6px 12px),
-      var(--paper-shadow);
-    border:1px dashed rgba(26,20,16,.4);
-    text-decoration:none;
-    color:var(--ink-soft);
-    transition: background .25s, color .25s, border-color .25s;
-  }
-  .plate.empty a:hover{
-    background:var(--paper-shadow);
-    color:var(--blood);
-    border-color:var(--blood);
-  }
-  .plate.empty .dev{
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
-    font-size: clamp(13px, 1vw, 16px);
-    line-height:1.15;
-    letter-spacing:.06em;
-    text-align:center;
+  /* ===== responsive ===== */
+  @media (max-width:760px){
+    .topbar nav{display:none}
+    .topbar .menu-btn{display:inline-block}
+    .topbar .meta{display:none}
+    .hero-frame{width:78vw}
+    .show{grid-template-columns: 90px 1fr;gap:14px}
+    .show .meta{grid-column:1 / -1;text-align:left;color:var(--muted)}
+    .booking{padding:28px}
+    .topbar .row{height:48px}
+    section{padding:48px 0}
   }
 
-  /* a closing colophon */
-  .colophon{
-    margin-top:6vh;
-    padding-top:2vh;
-    text-align:center;
-    border-top:1px solid rgba(26,20,16,.12);
-    font-family:"Cormorant Garamond",serif;
-    font-style:italic;
-    font-size:12px;
-    color:var(--ink-soft);
-    letter-spacing:.05em;
-    position:relative;
-    z-index:2;
-  }
-  .colophon b{ font-weight:400; color:var(--ink); }
-
-  /* mobile */
-  @media (max-width:720px){
-    body{padding:2.5vh 6vw}
-    .frame{grid-template-rows:auto 1fr auto auto}
-    .marg-tr{grid-row:1}
-    .marg-bl, .marg-br{grid-row:auto; justify-self:start; text-align:left; align-self:auto; margin-top:1.2rem}
-    .marg-br{grid-column:1}
-    .photo-wrap{width:62vw; transform:translate(-6%,0) rotate(-1.6deg)}
-    .title{
-      position:relative;
-      right:auto; top:auto;
-      text-align:center;
-      font-size: clamp(64px, 22vw, 140px);
-      margin-top:2.2rem;
-    }
-    .torn-1{ left:2%; top:6%; max-width:14ch }
-    .torn-2{ right:2%; bottom:auto; top:38%; max-width:14ch }
-    .torn-3{ left:2%; bottom:2% }
-    .label{ position:relative; left:auto; bottom:auto; transform:none; margin-top:1rem; white-space:normal; text-align:center }
-    .stage{padding:4vh 0 6vh}
-  }
-
-  @media (max-width:720px){
-    .sheet{ grid-template-columns: repeat(2, 1fr); gap:1rem; }
-    .plates-head{ font-size: clamp(28px, 9vw, 44px); }
-  }
-
-  /* high-contrast a11y / reduced-motion */
   @media (prefers-reduced-motion:reduce){
-    .drift{animation:none; display:none}
+    *{transition:none !important}
   }
 </style>
 </head>
 <body>
 
-<div class="folio">— I —</div>
-
-<main class="frame">
-
-  <div class="cap marg-tl">
-    <small>Zuna Grey</small>
-    <small>Alberta · Canada</small>
-    <small>Transmitting MMXXVI</small>
-  </div>
-
-  <div class="cap marg-tr">
-    <small>Cat. No. ZG / 001</small>
-    <small>Edition: open</small>
-    <small>Pressed on tape &amp; static</small>
-  </div>
-
-  <section class="stage" aria-label="Zuna Grey">
-
-    <div class="photo-wrap">
-      <img src="/assets/img/hero-portrait.jpg" alt="Zuna Grey">
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+  <div class="wrap row">
+    <div class="left">
+      <span class="dot" aria-hidden="true"></span>
+      <strong style="font-weight:700;color:var(--fg);letter-spacing:.22em">ZUNA GREY</strong>
+      <span class="meta">
+        <span>TX. 01.01</span>
+        <span>53.5°N · 113.5°W</span>
+      </span>
     </div>
-
-    <h1 class="title" aria-label="Zuna Grey">
-      <span>Zuna</span><span class="grey">Grey</span>
-    </h1>
-
-    <p class="torn torn-1">
-      a small congregation of four; assembled in the prairie dusk and unwilling to disperse.
-    </p>
-
-    <p class="torn torn-2">
-      we mistook the radio for a confession booth and have been broadcasting ever since.
-    </p>
-
-    <p class="torn torn-3">
-      Michael · Jon · James · <b>Hearim</b>
-    </p>
-
-    <p class="label">
-      <s>Plate I.</s> &nbsp; Portrait of the band, hand-tinted &nbsp; · &nbsp; do not remove from sleeve
-    </p>
-
-  </section>
-
-  <div class="cap marg-bl links">
-    <small><em>listen —</em>
-      <a href="https://open.spotify.com/" target="_blank" rel="noopener">spotify</a> ·
-      <a href="https://music.apple.com/" target="_blank" rel="noopener">apple</a> ·
-      <a href="https://soundcloud.com/" target="_blank" rel="noopener">soundcloud</a>
-    </small>
-    <small><em>watch —</em>
-      <a href="#plates">plates</a> ·
-      <a href="https://www.instagram.com/" target="_blank" rel="noopener">instagram</a> ·
-      <span style="color:var(--ink-soft)">youtube · soon</span>
-    </small>
+    <nav>
+      <a href="#listen">Music</a>
+      <a href="#shows">Shows</a>
+      <a href="#about">About</a>
+      <a href="/press.html">Press</a>
+      <a href="mailto:zunagreyband@gmail.com">Book</a>
+    </nav>
+    <button class="menu-btn" aria-label="Menu" id="menuBtn">Menu</button>
   </div>
+</header>
 
-  <div class="cap marg-br links">
-    <small><em>shows —</em></small>
-    <small>29 May MMXXVI &nbsp;·&nbsp; <span style="color:var(--ink-soft)">tba</span></small>
-    <small>03 Jul MMXXVI &nbsp;·&nbsp; <span style="color:var(--ink-soft)">tba</span></small>
-    <small><em>press —</em> <a href="/press.html">dossier</a></small>
-    <small><em>write —</em> <a href="mailto:zunagreyband@gmail.com">zunagreyband@gmail.com</a></small>
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-frame">
+    <img src="/assets/img/hero.jpg" alt="Zuna Grey" loading="eager">
+    <div class="hero-mark" aria-hidden="true"></div>
+    <div class="hero-title">
+      <h1>ZUNA GREY</h1>
+      <div class="sub">Alt-rock · Alberta · MMXXVI</div>
+    </div>
   </div>
-
-</main>
-
-<section class="plates" id="plates" aria-label="Plates">
-  <div class="folio-2">— II —</div>
-  <h2 class="plates-head"><em>plates</em></h2>
-  <p class="plates-sub cap">contact sheet · selected exposures · all silver gelatin in feeling</p>
-
-  <div class="sheet">
-    <figure class="plate plate-a">
-      <img src="/assets/img/plate-2.jpg" alt="Zuna Grey, live — guitar">
-      <figcaption>Plate II.</figcaption>
-    </figure>
-    <figure class="plate plate-b">
-      <img src="/assets/img/plate-3.jpg" alt="Zuna Grey, live — beneath the sigil">
-      <figcaption>Plate III.</figcaption>
-    </figure>
-    <figure class="plate plate-c">
-      <img src="/assets/img/plate-4.jpg" alt="Zuna Grey, live — vocal in blue">
-      <figcaption>Plate IV.</figcaption>
-    </figure>
-    <figure class="plate plate-d">
-      <img src="/assets/img/plate-5.jpg" alt="Zuna Grey, live — under green light">
-      <figcaption>Plate V.</figcaption>
-    </figure>
-    <figure class="plate plate-e">
-      <img src="/assets/img/plate-6.jpg" alt="Zuna Grey, live — full stage">
-      <figcaption>Plate VI.</figcaption>
-    </figure>
-    <figure class="plate plate-f empty">
-      <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube — coming soon">
-        <span class="dev">to be<br>developed</span>
-      </a>
-      <figcaption>Plate VII. — moving picture · soon</figcaption>
-    </figure>
-  </div>
-
-  <p class="colophon">
-    <b>Zuna Grey</b> · catalogued at the edge of MMXXVI · <a href="mailto:zunagreyband@gmail.com" style="color:var(--ink-soft);text-decoration:none;border-bottom:1px solid rgba(26,20,16,.2)">correspondence welcome</a>
-  </p>
 </section>
 
-<div class="drift" aria-hidden="true">the noise you cannot tune out</div>
+<div class="wrap">
+
+  <!-- ===== TAGLINE / CTA ===== -->
+  <div class="tagline">
+    <p>We do not play songs. <span class="accent">We broadcast warnings.</span></p>
+    <div class="cta">
+      <a href="#listen" class="btn btn-primary">Listen <span class="arrow">→</span></a>
+      <a href="/press.html" class="btn btn-ghost">Press Kit <span class="arrow">→</span></a>
+    </div>
+    <div class="status">
+      <span class="live">Status · Live</span>
+      <span>Alt-rock · 4 ops</span>
+      <span>Alberta, AB</span>
+      <span>EST. MMXXIV</span>
+    </div>
+  </div>
+
+  <!-- ===== 01 NEXT TRANSMISSION ===== -->
+  <section id="shows">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Next Transmission</h2>
+    </div>
+    <span class="barcode" aria-hidden="true"></span>
+
+    <div class="shows" style="margin-top:22px">
+      <div class="show tba">
+        <div class="date">29 May 2026</div>
+        <div class="where">Venue TBA <small>Alberta, Canada</small></div>
+        <div class="meta">Confirmed · venue soon</div>
+      </div>
+      <div class="show tba">
+        <div class="date">03 Jul 2026</div>
+        <div class="where">Venue TBA <small>Alberta, Canada</small></div>
+        <div class="meta">Confirmed · venue soon</div>
+      </div>
+    </div>
+
+    <a href="mailto:zunagreyband@gmail.com" class="all-shows">All shows · book us →</a>
+  </section>
+
+  <span class="barcode" aria-hidden="true"></span>
+
+  <!-- ===== 02 LISTEN / WATCH ===== -->
+  <section id="listen">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Tune In</h2>
+    </div>
+    <span class="barcode" aria-hidden="true"></span>
+
+    <p class="copy" style="margin-top:22px">
+      Streams, channels and broadcasts. New transmissions arriving through the year.
+    </p>
+
+    <div class="channels">
+      <a href="https://open.spotify.com/" target="_blank" rel="noopener">Spotify</a>
+      <a href="https://music.apple.com/" target="_blank" rel="noopener">Apple Music</a>
+      <a href="https://soundcloud.com/" target="_blank" rel="noopener">Soundcloud</a>
+      <a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+      <span class="soon">YouTube · soon</span>
+    </div>
+  </section>
+
+  <span class="barcode" aria-hidden="true"></span>
+
+  <!-- ===== 03 OPERATIVES ===== -->
+  <section id="about">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Four Operatives</h2>
+    </div>
+    <span class="barcode" aria-hidden="true"></span>
+
+    <p class="copy" style="margin-top:22px">
+      Bullets that don't ask permission. Influences buried somewhere between Alt-J, Pixies, Tool and Nine Inch Nails. Broadcasting from the Alberta sector since the last power cut.
+    </p>
+    <p class="copy" style="margin-top:14px;color:var(--muted);font-size:12px;letter-spacing:.22em;text-transform:uppercase">
+      Michael &nbsp;·&nbsp; Jon &nbsp;·&nbsp; James &nbsp;·&nbsp; Hearim
+    </p>
+    <a href="/press.html" class="read">Read the file →</a>
+  </section>
+
+  <span class="barcode" aria-hidden="true"></span>
+
+  <!-- ===== 04 BOOKING ===== -->
+  <section id="book">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Need a band that fills a room?</h2>
+    </div>
+    <span class="barcode" aria-hidden="true"></span>
+
+    <div class="booking">
+      <p class="copy">
+        We're booking bars, clubs and festivals across Western Canada. EPK, streaming links and photos ready to send.
+      </p>
+      <div class="cta" style="margin-top:24px">
+        <a href="mailto:zunagreyband@gmail.com" class="btn btn-primary">Get the Press Kit <span class="arrow">→</span></a>
+        <a href="mailto:zunagreyband@gmail.com" class="btn btn-ghost">Email Direct <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap row">
+    <span>© Zuna Grey · Alberta, AB</span>
+    <a href="mailto:zunagreyband@gmail.com">zunagreyband@gmail.com</a>
+  </div>
+</footer>
+
+<script>
+  // simple mobile menu toggle
+  (function(){
+    var btn=document.getElementById('menuBtn');
+    var nav=document.querySelector('header.topbar nav');
+    if(!btn||!nav) return;
+    btn.addEventListener('click',function(){
+      var open=nav.style.display==='flex';
+      nav.style.display=open?'none':'flex';
+      if(!open){
+        nav.style.position='absolute';nav.style.top='44px';nav.style.right='28px';
+        nav.style.flexDirection='column';nav.style.background='var(--bg)';
+        nav.style.border='1px solid var(--rule)';nav.style.padding='14px 18px';nav.style.zIndex='10';
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
