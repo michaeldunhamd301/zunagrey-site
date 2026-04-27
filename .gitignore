@@ -9,6 +9,9 @@ __pycache__/
 .vscode/*
 !.vscode/settings.json
 
+# Raw band assets (large local folder, not for deploy)
+Zuna Grey Stuff/
+
 # Design iteration screenshots & mockups
 home-desktop*.png
 home-mobile*.png

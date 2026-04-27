@@ -1,53 +1,50 @@
 #!/bin/bash
+set -euo pipefail
 
 # Configuration
 FUNCTION_NAME="zuna-grey-bbs"
 ZIP_FILE="deployment_package.zip"
 AWS_PROFILE="d301"
 AWS_REGION="us-east-1"
+CLOUDFRONT_ID="EVBJR6TDA3B8M"
 
-echo "--- Zuna Grey AWS Deployment ---"
+echo "--- Zuna Grey deploy ---"
 
-# 1. Check if AWS CLI is installed
-if ! command -v aws &> /dev/null
-then
-    echo "ERROR: AWS CLI not found. Please install it to continue."
-    exit 1
+if ! command -v aws &> /dev/null; then
+  echo "ERROR: aws CLI not found."; exit 1
 fi
 
-# 2. Package the code
-echo "Packaging code..."
-# Remove old zip if exists
-rm -f $ZIP_FILE
-# Zip only necessary files (handler and html)
-zip -r $ZIP_FILE lambda_function.py index.html
-echo "Package created: $ZIP_FILE"
+# 1. Package site + lambda handler
+echo "Packaging..."
+rm -f "$ZIP_FILE"
+zip -qr "$ZIP_FILE" \
+  lambda_function.py \
+  index.html press.html terminal.html \
+  assets
+echo "Package: $(du -h "$ZIP_FILE" | cut -f1)"
 
-# 3. Check if function exists
-echo "Checking for existing function '$FUNCTION_NAME'..."
-if aws lambda get-function --function-name "$FUNCTION_NAME" --profile "$AWS_PROFILE" --region "$AWS_REGION" >/dev/null 2>&1; then
-    echo "Function exists. Updating code..."
-    aws lambda update-function-code \
-        --function-name "$FUNCTION_NAME" \
-        --zip-file "fileb://$ZIP_FILE" \
-        --profile "$AWS_PROFILE" \
-        --region "$AWS_REGION"
-    echo "Update complete."
-else
-    echo "Function does not exist. Creating new function '$FUNCTION_NAME'..."
-    # Warning: This assumes a default execution role exists or needs to be specified. 
-    # For simplicity in this script, we'll try to create it, but often roles are complex to guess.
-    # A better approach for a "hosted" request is to create the zipped package and ask the user to just upload it if they aren't IAM experts,
-    # OR try to create with a basic role if we knew one.
-    
-    echo "!! ERROR: Creating a NEW function via CLI requires an IAM Role ARN."
-    echo "!! Please create the function manually in AWS Console named '$FUNCTION_NAME' with Python 3.x runtime,"
-    echo "!! OR provide an IAM Role ARN to this script."
-    echo " "
-    echo "Package $ZIP_FILE is ready for manual upload in the AWS Console."
-    exit 1
-fi
+# 2. Push to Lambda
+echo "Updating Lambda '$FUNCTION_NAME'..."
+aws lambda update-function-code \
+  --function-name "$FUNCTION_NAME" \
+  --zip-file "fileb://$ZIP_FILE" \
+  --profile "$AWS_PROFILE" --region "$AWS_REGION" \
+  --no-cli-pager --output text > /dev/null
+echo "Lambda updated."
 
-# 4. Cleanup
-# rm $ZIP_FILE
-echo "Done."
+# 3. Wait for code update to finish propagating
+echo "Waiting for Lambda to be Active..."
+aws lambda wait function-updated-v2 \
+  --function-name "$FUNCTION_NAME" \
+  --profile "$AWS_PROFILE" --region "$AWS_REGION" 2>/dev/null || true
+
+# 4. Invalidate CloudFront so visitors see the new content immediately
+echo "Invalidating CloudFront ($CLOUDFRONT_ID)..."
+INVALIDATION_ID=$(aws cloudfront create-invalidation \
+  --distribution-id "$CLOUDFRONT_ID" \
+  --paths "/*" \
+  --profile "$AWS_PROFILE" \
+  --query 'Invalidation.Id' --output text)
+echo "Invalidation: $INVALIDATION_ID (typically completes in 1-3 min)"
+
+echo "Done. https://zunagrey.com"
