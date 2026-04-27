@@ -1,528 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ZUNA GREY</title>
-<meta name="description" content="Zuna Grey — a four-piece broadcasting from Alberta, Canada.">
-<meta property="og:title" content="ZUNA GREY">
-<meta property="og:description" content="A four-piece broadcasting from Alberta, Canada.">
-<meta property="og:image" content="/assets/img/hero.jpg">
-<meta property="og:type" content="website">
-<meta name="theme-color" content="#0a0a0a">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%230a0a0a%22/><rect x=%226%22 y=%2214%22 width=%2220%22 height=%224%22 fill=%22%23e22f2c%22/></svg>">
-<style>
-  :root{
-    --bg:#0a0a0a;
-    --bg-2:#111111;
-    --fg:#f5f1e8;
-    --fg-dim:#a8a39a;
-    --muted:#5a554d;
-    --rule:#1d1c1a;
-    --accent:#e22f2c;
-    --accent-dim:#7e1a18;
-    --shadow:0 10px 40px rgba(0,0,0,.5);
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    background:var(--bg);
-    color:var(--fg);
-    font-family:"Space Mono",ui-monospace,monospace;
-    font-size:15px;
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  a{color:inherit;text-decoration:none}
-  ::selection{background:var(--accent);color:var(--fg)}
-
-  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
-
-  /* ===== top bar ===== */
-  .topbar{
-    border-bottom:1px solid var(--rule);
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color:var(--fg-dim);
-  }
-  .topbar .row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    height:44px;
-  }
-  .topbar .left{display:flex;align-items:center;gap:14px}
-  .topbar .dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 10px var(--accent)}
-  .topbar .meta{display:flex;gap:14px;color:var(--muted)}
-  .topbar nav{display:flex;gap:22px}
-  .topbar nav a{transition:color .15s}
-  .topbar nav a:hover{color:var(--accent)}
-  .topbar .menu-btn{
-    display:none;
-    border:1px solid var(--fg-dim);
-    background:transparent;color:var(--fg);
-    font-family:inherit;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-    padding:6px 14px;cursor:pointer;
-  }
-
-  /* ===== hero ===== */
-  .hero{
-    padding:42px 0 28px;
-    display:grid;
-    place-items:center;
-  }
-  .hero-frame{
-    position:relative;
-    width:min(420px, 78vw);
-    aspect-ratio: 3/4;
-    background:#1a1814;
-    box-shadow:var(--shadow);
-    overflow:hidden;
-  }
-  .hero-frame img{
-    width:100%;height:100%;
-    object-fit:cover;
-    display:block;
-    filter: contrast(1.05) saturate(.85);
-  }
-  .hero-frame::after{
-    content:"";
-    position:absolute;inset:0;
-    background:linear-gradient(to bottom, transparent 55%, rgba(10,10,10,.85) 100%);
-    pointer-events:none;
-  }
-  .hero-title{
-    position:absolute;
-    left:0;right:0;
-    bottom:18px;
-    text-align:center;
-    z-index:2;
-    padding:0 16px;
-  }
-  .hero-title h1{
-    font-family:"Archivo Black",sans-serif;
-    font-size: clamp(34px, 6.6vw, 64px);
-    letter-spacing:.02em;
-    line-height:.95;
-    color:var(--fg);
-    text-shadow: 0 2px 18px rgba(0,0,0,.6);
-  }
-  .hero-title .sub{
-    margin-top:6px;
-    font-size:9px;
-    letter-spacing:.32em;
-    color:var(--fg-dim);
-    text-transform:uppercase;
-  }
-  .hero-mark{
-    position:absolute;
-    left:14%;right:14%;
-    bottom:10px;
-    height:6px;
-    background:var(--accent);
-    transform:skewX(-14deg);
-    opacity:.85;
-    z-index:1;
-  }
-
-  /* ===== tagline ===== */
-  .tagline{
-    padding:18px 0 24px;
-    border-bottom:1px solid var(--rule);
-  }
-  .tagline p{
-    font-family:"Archivo Black",sans-serif;
-    font-size: clamp(18px, 2.2vw, 26px);
-    line-height:1.18;
-    letter-spacing:.005em;
-    color:var(--fg);
-    max-width:60ch;
-  }
-  .tagline .accent{color:var(--accent)}
-
-  .cta{
-    margin-top:22px;
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-  .btn{
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    padding:14px 22px;
-    font-family:"Space Mono",monospace;
-    font-size:12px;
-    letter-spacing:.22em;
-    text-transform:uppercase;
-    border:1px solid transparent;
-    cursor:pointer;
-    transition:transform .15s, background .15s, color .15s, border-color .15s;
-  }
-  .btn-primary{background:var(--accent);color:var(--fg);}
-  .btn-primary:hover{background:#ff3a36}
-  .btn-ghost{background:transparent;color:var(--fg);border-color:var(--fg-dim);}
-  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-  .btn .arrow{font-size:14px}
-
-  /* status strip */
-  .status{
-    margin-top:22px;
-    display:flex;
-    gap:18px;
-    flex-wrap:wrap;
-    font-size:10px;
-    letter-spacing:.28em;
-    text-transform:uppercase;
-    color:var(--muted);
-  }
-  .status span{display:inline-flex;align-items:center;gap:8px}
-  .status span::before{content:"";display:inline-block;width:5px;height:5px;background:var(--muted)}
-  .status .live::before{background:var(--accent);box-shadow:0 0 8px var(--accent)}
-  .status .live{color:var(--fg-dim)}
-
-  /* ===== sections ===== */
-  section{padding:64px 0}
-  .sec-head{
-    display:flex;
-    align-items:baseline;
-    gap:18px;
-    margin-bottom:22px;
-  }
-  .sec-num{
-    font-family:"Space Mono",monospace;
-    font-size:11px;
-    letter-spacing:.22em;
-    color:var(--muted);
-    border:1px solid var(--rule);
-    padding:4px 8px;
-  }
-  .sec-title{
-    font-family:"Archivo Black",sans-serif;
-    font-size: clamp(24px, 3.4vw, 38px);
-    letter-spacing:.005em;
-    line-height:1;
-  }
-
-  /* barcode-style divider */
-  .barcode{
-    display:block;
-    height:14px;
-    width:100%;
-    background-image:repeating-linear-gradient(
-      to right,
-      var(--accent) 0 2px,
-      transparent 2px 5px,
-      var(--accent-dim) 5px 6px,
-      transparent 6px 9px,
-      var(--accent) 9px 11px,
-      transparent 11px 16px,
-      var(--accent-dim) 16px 18px,
-      transparent 18px 24px
-    );
-    opacity:.85;
-    margin:0;
-  }
-
-  /* shows */
-  .shows{display:grid;gap:14px}
-  .show{
-    display:grid;
-    grid-template-columns: 130px 1fr auto;
-    gap:24px;
-    align-items:baseline;
-    padding:18px 0;
-    border-bottom:1px dashed var(--rule);
-  }
-  .show .date{
-    font-family:"Archivo Black",sans-serif;
-    color:var(--accent);
-    font-size:13px;
-    letter-spacing:.06em;
-  }
-  .show .where{
-    font-family:"Archivo Black",sans-serif;
-    font-size:18px;
-    letter-spacing:.005em;
-    color:var(--fg);
-  }
-  .show .where small{
-    display:block;
-    font-family:"Space Mono",monospace;
-    font-weight:400;
-    font-size:11px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--fg-dim);
-    margin-top:4px;
-  }
-  .show .meta{
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color:var(--muted);
-    text-align:right;
-  }
-  .show.tba .meta{color:var(--fg-dim)}
-  .all-shows{
-    margin-top:18px;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-size:11px;
-    letter-spacing:.24em;
-    text-transform:uppercase;
-    color:var(--fg-dim);
-  }
-  .all-shows:hover{color:var(--accent)}
-
-  /* operatives */
-  .copy{
-    max-width:62ch;
-    color:var(--fg-dim);
-    font-size:15px;
-    line-height:1.7;
-  }
-  .read{
-    display:inline-flex;align-items:center;gap:8px;
-    margin-top:18px;
-    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
-    color:var(--fg-dim);
-    border-bottom:1px solid var(--rule);
-    padding-bottom:2px;
-  }
-  .read:hover{color:var(--accent);border-color:var(--accent)}
-
-  /* listen / watch row */
-  .channels{
-    display:flex;flex-wrap:wrap;gap:10px 14px;
-    margin-top:22px;
-    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--fg-dim);
-  }
-  .channels a{
-    border:1px solid var(--rule);
-    padding:9px 14px;
-    transition:border-color .15s,color .15s;
-  }
-  .channels a:hover{border-color:var(--accent);color:var(--accent)}
-  .channels .soon{
-    padding:9px 14px;
-    border:1px dashed var(--rule);
-    color:var(--muted);
-  }
-
-  /* booking */
-  .booking{
-    background:linear-gradient(180deg, #100f0e, #0a0a0a);
-    border:1px solid var(--rule);
-    padding:42px;
-    margin-top:8px;
-  }
-
-  /* footer */
-  footer{
-    border-top:1px solid var(--rule);
-    padding:22px 0 32px;
-    margin-top:24px;
-    color:var(--muted);
-    font-size:11px;
-    letter-spacing:.22em;
-    text-transform:uppercase;
-  }
-  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
-  footer a:hover{color:var(--accent)}
-
-  /* ===== responsive ===== */
-  @media (max-width:760px){
-    .topbar nav{display:none}
-    .topbar .menu-btn{display:inline-block}
-    .topbar .meta{display:none}
-    .hero-frame{width:78vw}
-    .show{grid-template-columns: 90px 1fr;gap:14px}
-    .show .meta{grid-column:1 / -1;text-align:left;color:var(--muted)}
-    .booking{padding:28px}
-    .topbar .row{height:48px}
-    section{padding:48px 0}
-  }
-
-  @media (prefers-reduced-motion:reduce){
-    *{transition:none !important}
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ZUNA GREY</title>
+  <meta name="description" content="Zuna Grey — 4-piece alt-rock from Alberta, Canada.">
+  <meta property="og:title" content="ZUNA GREY">
+  <meta property="og:description" content="4-piece alt-rock from Alberta, Canada.">
+  <meta property="og:image" content="/assets/img/hero-portrait.jpg">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#07070a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%2307070a%22/><circle cx=%2216%22 cy=%2216%22 r=%226%22 fill=%22%23e8e3d4%22/></svg>">
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
+<div class="grain"></div>
+<div class="halftone"></div>
 
-<!-- ===== TOP BAR ===== -->
-<header class="topbar">
-  <div class="wrap row">
-    <div class="left">
-      <span class="dot" aria-hidden="true"></span>
-      <strong style="font-weight:700;color:var(--fg);letter-spacing:.22em">ZUNA GREY</strong>
-      <span class="meta">
-        <span>TX. 01.01</span>
-        <span>53.5°N · 113.5°W</span>
-      </span>
+<!-- ===== HERO — wordmark only, no photo ===== -->
+<header class="hero" id="top">
+  <div class="hero-dots" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="hero-top util">
+    <div>
+      <span class="dim">TX · 01.01</span><br>
+      ZUNA GREY
     </div>
-    <nav>
-      <a href="#listen">Music</a>
-      <a href="#shows">Shows</a>
-      <a href="#about">About</a>
-      <a href="/press.html">Press</a>
-      <a href="mailto:zunagreyband@gmail.com">Book</a>
-    </nav>
-    <button class="menu-btn" aria-label="Menu" id="menuBtn">Menu</button>
+    <div class="right dim">
+      53.5°N · 113.5°W<br>
+      ALBERTA, CA
+    </div>
+  </div>
+
+  <div class="hero-title">
+    <h1>ZUNA<br>GREY</h1>
+  </div>
+
+  <div class="hero-bottom util">
+    <div>
+      <span class="dim">EST.</span> MMXXIV<br>
+      <span class="dim">FORMAT</span> ALT-ROCK
+    </div>
+    <div class="center">
+      <span class="dot"></span>
+    </div>
+    <div class="right dim">
+      <a href="#listen" style="border:none;">↓ &nbsp;TUNE IN</a>
+    </div>
   </div>
 </header>
 
-<!-- ===== HERO ===== -->
-<section class="hero">
-  <div class="hero-frame">
-    <img src="/assets/img/hero.jpg" alt="Zuna Grey" loading="eager">
-    <div class="hero-mark" aria-hidden="true"></div>
-    <div class="hero-title">
-      <h1>ZUNA GREY</h1>
-      <div class="sub">Alt-rock · Alberta · MMXXVI</div>
-    </div>
-  </div>
-</section>
+<main>
 
-<div class="wrap">
-
-  <!-- ===== TAGLINE / CTA ===== -->
-  <div class="tagline">
-    <p>We do not play songs. <span class="accent">We broadcast warnings.</span></p>
-    <div class="cta">
-      <a href="#listen" class="btn btn-primary">Listen <span class="arrow">→</span></a>
-      <a href="/press.html" class="btn btn-ghost">Press Kit <span class="arrow">→</span></a>
-    </div>
-    <div class="status">
-      <span class="live">Status · Live</span>
-      <span>Alt-rock · 4 ops</span>
-      <span>Alberta, AB</span>
-      <span>EST. MMXXIV</span>
-    </div>
-  </div>
-
-  <!-- ===== 01 NEXT TRANSMISSION ===== -->
-  <section id="shows">
-    <div class="sec-head">
-      <span class="sec-num">01</span>
-      <h2 class="sec-title">Next Transmission</h2>
-    </div>
-    <span class="barcode" aria-hidden="true"></span>
-
-    <div class="shows" style="margin-top:22px">
-      <div class="show tba">
-        <div class="date">29 May 2026</div>
-        <div class="where">Venue TBA <small>Alberta, Canada</small></div>
-        <div class="meta">Confirmed · venue soon</div>
-      </div>
-      <div class="show tba">
-        <div class="date">03 Jul 2026</div>
-        <div class="where">Venue TBA <small>Alberta, Canada</small></div>
-        <div class="meta">Confirmed · venue soon</div>
-      </div>
+  <!-- ===== 01 SHOWS ===== -->
+  <section class="poster" id="shows">
+    <div class="poster-corners util">
+      <div><span class="dim">01</span><br>SHOWS</div>
+      <div class="right dim">UPCOMING · MMXXVI</div>
     </div>
 
-    <a href="mailto:zunagreyband@gmail.com" class="all-shows">All shows · book us →</a>
-  </section>
-
-  <span class="barcode" aria-hidden="true"></span>
-
-  <!-- ===== 02 LISTEN / WATCH ===== -->
-  <section id="listen">
-    <div class="sec-head">
-      <span class="sec-num">02</span>
-      <h2 class="sec-title">Tune In</h2>
+    <div class="poster-headline">
+      <h2>NEXT<br>TRANSMISSIONS</h2>
     </div>
-    <span class="barcode" aria-hidden="true"></span>
 
-    <p class="copy" style="margin-top:22px">
-      Streams, channels and broadcasts. New transmissions arriving through the year.
+    <ul class="show-list">
+      <li>
+        <span class="date">29 May 2026</span>
+        <span class="venue">Venue TBA</span>
+        <span class="time dim">Confirmed · venue soon</span>
+      </li>
+      <li>
+        <span class="date">03 Jul 2026</span>
+        <span class="venue">Venue TBA</span>
+        <span class="time dim">Confirmed · venue soon</span>
+      </li>
+    </ul>
+
+    <p class="util dim small" style="margin-top: 24px;">
+      Booking inquiries → <a href="mailto:booking@zunagrey.com">booking@zunagrey.com</a>
     </p>
-
-    <div class="channels">
-      <a href="https://open.spotify.com/" target="_blank" rel="noopener">Spotify</a>
-      <a href="https://music.apple.com/" target="_blank" rel="noopener">Apple Music</a>
-      <a href="https://soundcloud.com/" target="_blank" rel="noopener">Soundcloud</a>
-      <a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
-      <span class="soon">YouTube · soon</span>
-    </div>
   </section>
 
-  <span class="barcode" aria-hidden="true"></span>
-
-  <!-- ===== 03 OPERATIVES ===== -->
-  <section id="about">
-    <div class="sec-head">
-      <span class="sec-num">03</span>
-      <h2 class="sec-title">Four Operatives</h2>
+  <!-- ===== 02 LISTEN ===== -->
+  <section class="poster" id="listen">
+    <div class="poster-corners util">
+      <div><span class="dim">02</span><br>LISTEN</div>
+      <div class="right dim">STREAMING · SOCIAL</div>
     </div>
-    <span class="barcode" aria-hidden="true"></span>
 
-    <p class="copy" style="margin-top:22px">
-      Bullets that don't ask permission. Influences buried somewhere between Alt-J, Pixies, Tool and Nine Inch Nails. Broadcasting from the Alberta sector since the last power cut.
-    </p>
-    <p class="copy" style="margin-top:14px;color:var(--muted);font-size:12px;letter-spacing:.22em;text-transform:uppercase">
-      Michael &nbsp;·&nbsp; Jon &nbsp;·&nbsp; James &nbsp;·&nbsp; Hearim
-    </p>
-    <a href="/press.html" class="read">Read the file →</a>
+    <div class="poster-headline">
+      <h2>TUNE<br>IN</h2>
+    </div>
+
+    <ul class="platforms">
+      <li><a href="https://open.spotify.com/artist/1DZv7YbcdNunxPMIb3tfas" target="_blank" rel="noopener">Spotify</a></li>
+      <li><a href="https://music.apple.com/ca/artist/zuna-grey/1787713945" target="_blank" rel="noopener">Apple Music</a></li>
+      <li><a href="https://soundcloud.com/mjwdunham" target="_blank" rel="noopener">SoundCloud</a></li>
+      <li><a href="https://www.instagram.com/zunagrey" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a href="#" aria-disabled="true" style="opacity:.45; pointer-events:none;">YouTube · soon</a></li>
+    </ul>
   </section>
 
-  <span class="barcode" aria-hidden="true"></span>
-
-  <!-- ===== 04 BOOKING ===== -->
-  <section id="book">
-    <div class="sec-head">
-      <span class="sec-num">04</span>
-      <h2 class="sec-title">Need a band that fills a room?</h2>
+  <!-- ===== 03 ABOUT ===== -->
+  <section class="poster" id="about">
+    <div class="poster-corners util">
+      <div><span class="dim">03</span><br>ABOUT</div>
+      <div class="right dim">FOUR OPERATIVES · ALBERTA</div>
     </div>
-    <span class="barcode" aria-hidden="true"></span>
 
-    <div class="booking">
-      <p class="copy">
-        We're booking bars, clubs and festivals across Western Canada. EPK, streaming links and photos ready to send.
-      </p>
-      <div class="cta" style="margin-top:24px">
-        <a href="mailto:zunagreyband@gmail.com" class="btn btn-primary">Get the Press Kit <span class="arrow">→</span></a>
-        <a href="mailto:zunagreyband@gmail.com" class="btn btn-ghost">Email Direct <span class="arrow">→</span></a>
+    <div class="poster-headline">
+      <h2>FOUR<br>OPERATIVES</h2>
+    </div>
+
+    <p class="quote">"We broadcast warnings."</p>
+
+    <ul class="pills">
+      <li>Alt-Rock</li>
+      <li>Post-Grunge</li>
+      <li>Industrial-Tinged</li>
+      <li>4-Piece</li>
+      <li>Alberta, CA</li>
+    </ul>
+
+    <div class="bio-grid">
+      <div class="bio">
+        <p>Bullets that don't ask permission. Influences buried somewhere between Radiohead's paranoia, Pixies' dynamics, Tool's patience and Nine Inch Nails' machine.</p>
+        <p>Broadcasting from the Alberta sector since the last power cut. Songs aren't sung so much as transmitted — warnings for anyone still listening.</p>
+        <p class="util dim small" style="margin-top: 18px;">
+          <a href="/press.html">→ Read the file (full bio · press kit)</a>
+        </p>
       </div>
+
+      <ul class="lineup">
+        <li><span class="name">Michael</span><span class="role">Vox · Gtr</span></li>
+        <li><span class="name">Jon</span><span class="role">Gtr · Vox</span></li>
+        <li><span class="name">James</span><span class="role">Drums</span></li>
+        <li><span class="name">Hearim</span><span class="role">Bass</span></li>
+      </ul>
     </div>
   </section>
 
-</div>
+  <!-- ===== 04 BOOK ===== -->
+  <section class="poster" id="book">
+    <div class="poster-corners util">
+      <div><span class="dim">04</span><br>BOOK</div>
+      <div class="right dim">RESPONSE WITHIN 48H</div>
+    </div>
 
-<!-- ===== FOOTER ===== -->
+    <div class="poster-headline">
+      <h2>BOOK<br>ZUNA GREY</h2>
+    </div>
+
+    <div class="book-card">
+      <span class="label">Booking · Western Canada</span>
+      <a class="mailto" href="mailto:booking@zunagrey.com?subject=Booking%20Inquiry%20-%20Zuna%20Grey">booking@<br>zunagrey.com</a>
+      <p class="util dim small" style="margin: 0;">Bars · clubs · breweries · festivals. Self-sufficient — own PA, IEMs and backline. Set lengths flexible (30 / 45 / 60). EPK and stage plot on request.</p>
+    </div>
+  </section>
+
+</main>
+
 <footer>
-  <div class="wrap row">
-    <span>© Zuna Grey · Alberta, AB</span>
-    <a href="mailto:zunagreyband@gmail.com">zunagreyband@gmail.com</a>
-  </div>
+  <span>© ZUNA GREY · ALBERTA_CA</span>
+  <span><a href="mailto:booking@zunagrey.com">booking@zunagrey.com</a></span>
+  <a href="/terminal.html" class="terminal-link">&gt; terminal</a>
 </footer>
-
-<script>
-  // simple mobile menu toggle
-  (function(){
-    var btn=document.getElementById('menuBtn');
-    var nav=document.querySelector('header.topbar nav');
-    if(!btn||!nav) return;
-    btn.addEventListener('click',function(){
-      var open=nav.style.display==='flex';
-      nav.style.display=open?'none':'flex';
-      if(!open){
-        nav.style.position='absolute';nav.style.top='44px';nav.style.right='28px';
-        nav.style.flexDirection='column';nav.style.background='var(--bg)';
-        nav.style.border='1px solid var(--rule)';nav.style.padding='14px 18px';nav.style.zIndex='10';
-      }
-    });
-  })();
-</script>
 
 </body>
 </html>
